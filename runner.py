@@ -1,13 +1,10 @@
-import argparse
 import time
-from pathlib import Path
 
 import cv2
 import numpy as np
-import serial
 
 from arduino import Arduino
-from utils import *
+import utils 
 
 
 CAR_SPEED = 1430
@@ -38,14 +35,15 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-arduino = Arduino(ARDUINO_PORT, baudrate=115200, timeout=10)
+#arduino = Arduino(ARDUINO_PORT, baudrate=115200, timeout=10)
 time.sleep(1)
 
-cap = cv2.VideoCapture(CAMERA_ID, cv2.CAP_V4L2)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+#cap = cv2.VideoCapture(CAMERA_ID, cv2.CAP_V4L2)
+cap = cv2.VideoCapture(0)
+# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
-arduino.set_speed(CAR_SPEED)
+#arduino.set_speed(CAR_SPEED)
 
 last_err = 0
 try:
@@ -54,10 +52,10 @@ try:
         if not ret:
             break
         img = cv2.resize(frame, SIZE)
-        binary = binarize(img, THRESHOLD)
-        perspective = trans_perspective(binary, TRAP, RECT, SIZE)
+        binary = utils.binarize_exp(img, d=1)
+        perspective = utils.trans_perspective(binary, TRAP, RECT, SIZE)
 
-        left, right = centre_mass(perspective)
+        left, right = utils.centre_mass(perspective)
         
         err = 0 - ((left + right) // 2 - SIZE[0] // 2)
         if abs(right - left) < 100:
@@ -72,11 +70,11 @@ try:
 
         last_err = err
         print(f'angle={angle}')
-        arduino.set_angle(angle)
+       # arduino.set_angle(angle)
 except KeyboardInterrupt as e:
     print('Program stopped!', e)
 
 
-arduino.stop()
-arduino.set_angle(90)
+# arduino.stop()
+# arduino.set_angle(90)
 cap.release()

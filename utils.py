@@ -13,13 +13,13 @@ def binarize(img, threshold, d=0):
     binary = cv2.bitwise_and(binary_g, binary_h)
 
     if d:
+        key = cv2.waitKey(1)
         cv2.imshow('hls', hls)
         cv2.imshow('hlsRange', binary_h)
         cv2.imshow('grayRange', binary_g)
         cv2.imshow('gray', gray)
         cv2.imshow('bin', binary)
 
-    # return binary
     return binary
 
 
@@ -39,6 +39,7 @@ def binarize_exp(img, d=0):
     binary = cv2.bitwise_and(binary_g, binary_h)
 
     if d:
+        key = cv2.waitKey(1)
         cv2.imshow('hls', hls)
         cv2.imshow('bgr_b', img[:, :, 0])
         cv2.imshow('bgr_g', img[:, :, 1])
